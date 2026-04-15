@@ -1,0 +1,5 @@
+{
+  "name": "ACDC Pros",
+  "description": "Elite Home Repair & DIY Consulting Platform featuring CoachBot",
+  "requestFramePermissions": ["camera", "microphone", "geolocation"]
+}
