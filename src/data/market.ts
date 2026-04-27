@@ -66,7 +66,7 @@ export const PRODUCTS: Product[] = [
     id: "03",
     name: "Pro-Series Drill Set",
     price: 450,
-    category: "Handyman",
+    category: "Pros & Handyman",
     image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&q=80&w=800",
     desc: "High-torque, brushless motor technology for relentless performance.",
     type: 'physical',

@@ -79,7 +79,7 @@ export default function OnlineConsulting() {
           </div>
 
           {/* Right Side: CoachBot Interface */}
-          <div className="w-full lg:w-2/3">
+          <div id="coachbot" className="w-full lg:w-2/3">
             <div className="bg-white/5 border border-white/10 h-[800px] relative overflow-hidden">
               <CoachBot ref={coachBotRef} />
             </div>

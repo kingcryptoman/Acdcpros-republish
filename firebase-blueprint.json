@@ -27,10 +27,79 @@
       "properties": {
         "uid": { "type": "string" },
         "email": { "type": "string" },
-        "role": { "type": "string", "enum": ["admin", "user"] },
+        "role": { "type": "string", "enum": ["admin", "user", "contractor"] },
         "displayName": { "type": "string" }
       },
       "required": ["uid", "email", "role"]
+    },
+    "Contractor": {
+      "title": "Contractor",
+      "description": "Professional contractor in the elite network",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "businessName": { "type": "string" },
+        "trade": { "type": "string" },
+        "experience": { "type": "string" },
+        "rating": { "type": "number" },
+        "specialties": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string", "enum": ["pending", "active", "suspended"] },
+        "commissionRate": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "businessName", "trade"]
+    },
+    "ServiceLead": {
+      "title": "Service Lead",
+      "description": "Project lead captured for the contractor network",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "clientName": { "type": "string" },
+        "clientEmail": { "type": "string" },
+        "phone": { "type": "string" },
+        "location": { "type": "string" },
+        "trade": { "type": "string" },
+        "description": { "type": "string" },
+        "budgetEstimate": { "type": "number" },
+        "status": { "type": "string", "enum": ["new", "dispatched", "completed"] },
+        "assignedContractorId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["clientName", "trade", "location"]
+    },
+    "Tutorial": {
+      "title": "Tutorial",
+      "description": "Educational tutorial content",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "duration": { "type": "string" },
+        "author": { "type": "string" },
+        "category": { "type": "string" },
+        "image": { "type": "string" },
+        "videoUrl": { "type": "string" },
+        "desc": { "type": "string" },
+        "isPremium": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "category", "image"]
+    },
+    "Service": {
+      "title": "Service",
+      "description": "Professional service offering",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "desc": { "type": "string" },
+        "iconName": { "type": "string" },
+        "features": { "type": "array", "items": { "type": "string" } },
+        "category": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "desc", "iconName"]
     }
   },
   "firestore": {
@@ -41,6 +110,22 @@
     "/users/{userId}": {
       "schema": "User",
       "description": "User profile data"
+    },
+    "/contractors/{contractorId}": {
+      "schema": "Contractor",
+      "description": "Elite contractor profiles"
+    },
+    "/leads/{leadId}": {
+      "schema": "ServiceLead",
+      "description": "Service project leads"
+    },
+    "/tutorials/{tutorialId}": {
+      "schema": "Tutorial",
+      "description": "Tutorial content"
+    },
+    "/services/{serviceId}": {
+      "schema": "Service",
+      "description": "Service offerings"
     }
   }
 }

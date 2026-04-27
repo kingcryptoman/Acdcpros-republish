@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Play, Clock, User, ArrowRight, Zap, Globe, Shield, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { db } from "../lib/firebase";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 
-const TUTORIALS = [
+const DEFAULT_TUTORIALS = [
   {
     id: "01",
     title: "Mastering the ACDC-X1 Multimeter",
@@ -11,17 +13,17 @@ const TUTORIALS = [
     author: "Alex Rivera",
     category: "Electrical",
     image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=800",
-    videoUrl: "https://www.youtube.com/embed/TdUK6RPdIrA",
+    videoUrl: "https://www.youtube.com/watch?v=TdUK6RPdIrA",
     desc: "Learn how to use AI-powered fault detection to diagnose residential circuit issues in minutes."
   },
   {
     id: "02",
-    title: "24hr Emergency Disaster Relief",
+    title: "Flood Response & Water Mitigation",
     duration: "18:20",
     author: "Elena Chen",
     category: "Emergency",
     image: "https://images.unsplash.com/photo-1544181423-842abb4473ce?auto=format&fit=crop&q=80&w=800",
-    videoUrl: "https://www.youtube.com/embed/9XInS_X63hI",
+    videoUrl: "https://www.youtube.com/watch?v=Xo8W6E_o_qY",
     desc: "Critical response techniques for water mitigation, disaster cleanup, and immediate structural stabilization."
   },
   {
@@ -31,23 +33,66 @@ const TUTORIALS = [
     author: "Jordan Smith",
     category: "Plumbing",
     image: "https://images.unsplash.com/photo-1585704032915-c3400ca1f963?auto=format&fit=crop&q=80&w=800",
-    videoUrl: "https://www.youtube.com/embed/f1_8v8p2X_M",
+    videoUrl: "https://www.youtube.com/watch?v=f1_8v8p2X_M",
     desc: "How to use the Smart Plumbing Camera to identify hidden obstructions and structural leaks."
   },
   {
     id: "04",
-    title: "Elite Handyman: Structural Repair",
+    title: "Elite Pros: Structural Framework",
     duration: "22:30",
     author: "Marcus Thorne",
     category: "Handyman",
     image: "https://images.unsplash.com/photo-1581094288338-2314dddb7ecb?auto=format&fit=crop&q=80&w=800",
-    videoUrl: "https://www.youtube.com/embed/J4_9p9_5_Zk",
+    videoUrl: "https://www.youtube.com/watch?v=J4_9p9_5_Zk",
     desc: "Advanced techniques for structural maintenance and precision carpentry using pro-series tools."
   }
 ];
 
+// Helper to convert various YouTube URL formats to embed URLs
+const getEmbedUrl = (url: string) => {
+  if (!url) return "";
+  
+  // Already an embed URL
+  if (url.includes("youtube.com/embed/")) return url;
+
+  let videoId = "";
+
+  if (url.includes("youtu.be/")) {
+    videoId = url.split("/").pop()?.split("?")[0] || "";
+  } else if (url.includes("youtube.com/watch?v=")) {
+    videoId = new URLSearchParams(new URL(url).search).get("v") || "";
+  } else if (url.includes("youtube.com/shorts/")) {
+    videoId = url.split("/shorts/")[1]?.split("?")[0] || "";
+  } else if (url.includes("youtube.com/v/")) {
+    videoId = url.split("/v/")[1]?.split("?")[0] || "";
+  }
+
+  return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : url;
+};
+
 export default function Tutorials() {
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
+  const [tutorials, setTutorials] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTutorials = async () => {
+      try {
+        const q = query(collection(db, "tutorials"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        const fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setTutorials(fetched.length > 0 ? fetched : DEFAULT_TUTORIALS);
+      } catch (error) {
+        console.error("Error fetching tutorials:", error);
+        setTutorials(DEFAULT_TUTORIALS);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTutorials();
+  }, []);
+
+  if (loading) return <div className="min-h-screen bg-black flex items-center justify-center text-white italic uppercase tracking-[0.4em] text-[10px]">Synchronizing_Knowledge_Base...</div>;
 
   return (
     <div className="min-h-screen bg-black pt-32 pb-20 px-6">
@@ -73,11 +118,11 @@ export default function Tutorials() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {TUTORIALS.map((tutorial) => (
+          {tutorials.map((tutorial) => (
             <TutorialCard 
               key={tutorial.id} 
               tutorial={tutorial} 
-              onPlay={() => setActiveVideo(tutorial.videoUrl)}
+              onPlay={() => setActiveVideo(getEmbedUrl(tutorial.videoUrl))}
             />
           ))}
         </div>

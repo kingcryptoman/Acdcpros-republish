@@ -1,38 +1,65 @@
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { ArrowRight, Zap, Shield, Target, Users, TrendingUp, Globe, PenTool as Tool, Lightbulb, Settings } from "lucide-react";
+import { ArrowRight, Zap, Shield, Target, Users, TrendingUp, Globe, PenTool as Tool, Lightbulb, Settings, Cloud, Construction, Droplets, Hammer, Layers, TreePine } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { db } from "../lib/firebase";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 
-const SERVICES = [
+const ICON_MAP: Record<string, any> = {
+  Shield, Zap, Target, Users, TrendingUp, Globe, Tool, Lightbulb, Settings, Cloud, Construction, Droplets, Hammer, Layers, TreePine
+};
+
+const DEFAULT_SERVICES = [
   {
     id: "01",
     title: "Construction Management",
     desc: "Elite-level project oversight, resource allocation, and operational excellence for complex construction projects.",
-    icon: Shield,
-    features: ["Project Scheduling", "Budget Optimization", "Quality Assurance"]
+    iconName: "Shield",
+    features: ["Project Scheduling", "Budget Optimization", "Quality Assurance"],
+    path: "/pros"
   },
   {
     id: "02",
     title: "24hr Emergency Disaster Relief",
     desc: "24hr emergency disaster relief, we clean up, and water mitigation. Immediate response for structural stabilization during critical emergencies.",
-    icon: Shield,
-    features: ["Water Mitigation", "Disaster Cleanup", "Structural Stabilization"]
+    iconName: "Shield",
+    features: ["Water Mitigation", "Disaster Cleanup", "Structural Stabilization"],
+    path: "/emergency"
   },
   {
     id: "03",
     title: "Project Consulting",
     desc: "AI-driven project planning and expert consulting for your home improvement goals.",
-    icon: Target,
-    features: ["Project Planning", "Budgeting", "DIY Roadmaps"]
-  },
-  {
-    id: "04",
-    title: "Elite Handyman",
-    desc: "Precision maintenance and repair services executed with professional-grade accuracy.",
-    icon: Tool,
-    features: ["Structural Repair", "Finish Carpentry", "System Maintenance"]
+    iconName: "Target",
+    features: ["Project Planning", "Budgeting", "DIY Roadmaps"],
+    path: "/online-consulting"
   }
 ];
 
 export default function Services() {
+  const navigate = useNavigate();
+  const [services, setServices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const q = query(collection(db, "services"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        const fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setServices(fetched.length > 0 ? fetched : DEFAULT_SERVICES);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+        setServices(DEFAULT_SERVICES);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchServices();
+  }, []);
+
+  if (loading) return <div className="min-h-screen bg-black flex items-center justify-center text-white italic uppercase tracking-[0.4em] text-[10px]">Initializing_Capabilities...</div>;
+
   return (
     <div className="min-h-screen bg-black pt-32 pb-20 px-6">
       <div className="max-w-7xl mx-auto">
@@ -57,8 +84,13 @@ export default function Services() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10 border border-white/10">
-          {SERVICES.map((service) => (
-            <ServiceCard key={service.id} service={service} />
+          {services.map((service, index) => (
+            <ServiceCard 
+              key={service.id} 
+              service={service} 
+              index={index}
+              onClick={() => navigate(service.path || "/pros")}
+            />
           ))}
         </div>
       </div>
@@ -66,25 +98,28 @@ export default function Services() {
   );
 }
 
-function ServiceCard({ service }: { service: any }) {
+function ServiceCard({ service, index, onClick }: { service: any; index: number; onClick: () => void }) {
+  const Icon = ICON_MAP[service.iconName] || Shield;
+  
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       className="group bg-black p-16 hover:bg-orange-500 transition-all duration-700 cursor-pointer relative overflow-hidden"
+      onClick={onClick}
     >
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-12">
-          <span className="text-white/20 group-hover:text-black/40 font-mono text-sm tracking-widest">[{service.id}]</span>
-          <service.icon className="w-8 h-8 text-orange-500 group-hover:text-black transition-colors duration-500" />
+          <span className="text-white/20 group-hover:text-black/40 font-mono text-sm tracking-widest">[{String(index + 1).padStart(2, '0')}]</span>
+          <Icon className="w-8 h-8 text-orange-500 group-hover:text-black transition-colors duration-500" />
         </div>
         
         <h3 className="text-4xl font-bold text-white group-hover:text-black uppercase italic tracking-tighter mb-6">{service.title}</h3>
         <p className="text-white/40 group-hover:text-black/60 text-lg font-light leading-relaxed mb-12">{service.desc}</p>
         
         <div className="space-y-4">
-          {service.features.map((feature: string, i: number) => (
+          {service.features?.map((feature: string, i: number) => (
             <div key={i} className="flex items-center gap-4">
               <div className="w-1 h-1 bg-orange-500 group-hover:bg-black" />
               <span className="text-white/60 group-hover:text-black font-bold uppercase tracking-widest text-[10px]">{feature}</span>

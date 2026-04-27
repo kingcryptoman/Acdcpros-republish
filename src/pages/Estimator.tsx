@@ -131,7 +131,7 @@ export default function Estimator() {
                   >
                     <h2 className="text-2xl font-bold text-white uppercase italic tracking-tight">Select Project Type</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {["Electrical", "Disaster Relief", "Plumbing", "Handyman", "Remodeling", "Consulting"].map((type) => (
+                      {["Electrical", "Disaster Relief", "Plumbing", "Pros & Handyman", "Remodeling", "Consulting"].map((type) => (
                         <button
                           key={type}
                           onClick={() => { setProjectType(type); setStep(2); }}

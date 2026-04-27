@@ -1,4 +1,5 @@
 import { Zap, Github, Twitter, Linkedin, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -8,7 +9,7 @@ export default function Footer() {
           <div className="flex flex-col gap-8">
             <div className="flex items-center gap-2">
               <Zap className="w-8 h-8 text-orange-500" />
-              <span className="text-2xl font-bold tracking-tighter text-white uppercase italic">ACDC PROS</span>
+              <span className="text-2xl font-bold tracking-tighter text-white uppercase italic text-nowrap">ACDC PROS</span>
             </div>
             <p className="text-white/40 text-sm font-light leading-relaxed uppercase tracking-widest max-w-xs">
               Elite home repair consulting for high-performance homeowners. 
@@ -23,24 +24,24 @@ export default function Footer() {
           </div>
 
           <FooterColumn title="Navigation">
-            <FooterLink href="#services">Services</FooterLink>
-            <FooterLink href="#coachbot">CoachBot</FooterLink>
-            <FooterLink href="#about">About</FooterLink>
-            <FooterLink href="#contact">Contact</FooterLink>
+            <FooterLink to="/services">Services</FooterLink>
+            <FooterLink to="/online-consulting">Consulting</FooterLink>
+            <FooterLink to="/shop">Market</FooterLink>
+            <FooterLink to="/tutorials">Tutorials</FooterLink>
           </FooterColumn>
 
           <FooterColumn title="Elite Services">
-            <FooterLink href="#">Project Strategy</FooterLink>
-            <FooterLink href="#">Repair Optimization</FooterLink>
-            <FooterLink href="#">Project Management</FooterLink>
-            <FooterLink href="#">Home Value Optimization</FooterLink>
+            <FooterLink to="/online-consulting">Project Strategy</FooterLink>
+            <FooterLink to="/online-consulting">Repair Optimization</FooterLink>
+            <FooterLink to="/pros">Project Management</FooterLink>
+            <FooterLink to="/estimator">Home Value Optimization</FooterLink>
           </FooterColumn>
 
           <FooterColumn title="Legal">
-            <FooterLink href="#">Privacy Policy</FooterLink>
-            <FooterLink href="#">Terms of Service</FooterLink>
-            <FooterLink href="#">Cookie Policy</FooterLink>
-            <FooterLink href="#">Disclaimer</FooterLink>
+            <FooterLink to="#">Privacy Policy</FooterLink>
+            <FooterLink to="#">Terms of Service</FooterLink>
+            <FooterLink to="#">Cookie Policy</FooterLink>
+            <FooterLink to="#">Disclaimer</FooterLink>
           </FooterColumn>
         </div>
 
@@ -89,11 +90,11 @@ function FooterColumn({ title, children }: { title: string; children: React.Reac
   );
 }
 
-function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+function FooterLink({ to, children }: { to: string; children: React.ReactNode }) {
   return (
-    <a href={href} className="text-white/40 hover:text-orange-500 text-xs uppercase tracking-widest font-bold transition-colors">
+    <Link to={to} className="text-white/40 hover:text-orange-500 text-xs uppercase tracking-widest font-bold transition-colors">
       {children}
-    </a>
+    </Link>
   );
 }
 
